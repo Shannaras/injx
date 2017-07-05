@@ -1,0 +1,14 @@
+{
+    "name": "labasse/injx",
+    "description": "Dependency Injection for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Labasse",
+            "email": "labasse@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
