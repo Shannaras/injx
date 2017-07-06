@@ -19,35 +19,77 @@ Create an `InjxContainer` and add services :
 ```
 
 To inject dependencies in a class:
-- Add `use \Injx\Injx;` in the class:
+- Add the trait in the class:
 ```
     class Foo {
         use \Injx\Injx;
 ```
-- Inject dependencies ASAP in the instance using the injx method:
+- Inject dependencies ASAP in the instance using the injxFrom or injxTo (if you're not sure if injxTo uses Injx trait)  method:
 ```
     $foo = new Foo();
-    $foo -> injx( $other_object_with_injx_trait );
+    $foo -> injxFrom( $container );
     // or
-    $foo -> injx( $container );
-    // or
-    $bar = new Bar( $other_object_with_injx_trait ); // with $this->injx( $arg ); in the constructor
+    $foo = new Foo();
+    $container -> injxTo( $foo );
 ```
 That's it, this class is able to: 
 - Get and use services:
 ``` 
-    public function doSomething() {
-        $logger = $this->getService('log');
-        //...
+    $logger = $this->getService('log');    
 ``` 
 - Override or make new services available for itself and injected descendants:
 ```
     $this->setService('route', new Route());
     $child = new Child();
-    $child -> injx($this);
+    $this->injxTo( $child );
 ```    
 
-## Exceptions
+## Advanced usage
+
+### Inheritance
+
+When you use the Injx trait in a parent class, all subclasses will have the dependency injection support.
+
+### Make services available in the constructor
+
+You may need some services in the constructor. You have to pass a container as argument to inject services at the begining:
+```
+    class Bar {
+        use \Injx\Injx;
+
+        public function __construct($some_arg, $injx_parent, ...) {
+            $injx_parent -> injxTo( $this );
+            $this -> getService('log') -> info( ... );
+            //...
+        }
+    }
+```
+
+### Shortcuts
+
+You can *abbreviate* some notations :
+```
+    $child = new Child();
+    $this->injxTo( $child );
+    // shorten to
+    $child = $this->injxTo( new Child() );
+
+    $foo = new Foo();
+    $foo -> injxFrom( $container );
+    // shorten to
+    $foo = (new Foo()) -> injxFrom( $container );
+
+    $container -> setService('log', new Logger());
+    $container -> setService('db', new Database());
+    // (not really) shorten to
+    $container
+        -> setService('log', new Logger());
+        -> setService('db', new Database());
+```
+
+## Known issues and exceptions
+If you're faced with a *Allowed memory size exhausted* issue. Check your injections, you probably wrote a circular reference like this : `$a->injxTo($b); $b->injxTo($c); $c->injxTo($a);`.
+
 Injx throws few exceptions, here they are:
 - `BadFunctionCallException('injx() must be called first')`: means you called getService before injecting using the injx() method
 - `InvalidArgumentException('Argument must have a getService method')`: means you passed to injx() an object without `use Injx;`

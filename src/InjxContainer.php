@@ -3,15 +3,13 @@
 namespace Injx;
 
 /**
- * Injx container class
- *
- * @author syl
+ * Container class to store service in the application root script or class.
  */
 class InjxContainer {
     use Injx;
     
     public function __construct() {
-        $this->injx(new class {
+        $this->injxFrom(new class {
             function getService() { 
                 return NULL;
             } 
