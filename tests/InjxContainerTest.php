@@ -10,6 +10,17 @@ class InjxContainerTest extends TestCase {
     protected function setUp() {
         $this->tested = new InjxContainer();        
     }
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testContainerWithBadParameters() {
+        new InjxContainer('foo');        
+    }
+    public function testContainerWithParameters() {
+        $service = new class {  };
+        $tested = new InjxContainer([ 'foo' => $service ]);
+        $this->assertEquals($service, $tested->getService('foo'));
+    }
     public function testGetServiceUnkown() {
         $this->assertEquals(NULL, $this->tested->getService('bar'));
     }
