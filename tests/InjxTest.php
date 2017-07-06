@@ -35,6 +35,13 @@ class InjxTest extends TestCase {
         $actual = $this -> tested -> injxFrom( $this -> mockContainer );
         $this -> assertEquals($this -> tested, $actual);
     }
+    public function testInjxOkBeforeInjection() {
+        $this->assertFalse( $this->tested->injxOk() );
+    }
+    public function testInjxOkAfterInjection() {
+        $this -> tested -> injxFrom( $this -> mockContainer );
+        $this->assertTrue( $this->tested->injxOk() );
+    }
     /**
      * @expectedException \BadMethodCallException
      */

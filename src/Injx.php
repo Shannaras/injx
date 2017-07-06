@@ -38,6 +38,13 @@ trait Injx {
         return $target;
     }
     /**
+     * Check if the current instance is injected or not
+     * @return bool true if injected (injxTo or injxFrom called), false if not
+     */
+    public function injxOk() : bool {
+        return $this->injxCaller != NULL;
+    }
+    /**
      * Associates a service to a key and make it visible from all objects injected from this one.
      * If a service is already associated to this key, it is replaced or masked by the new service.
      * @param string $key Key used to retreive the service
