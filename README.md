@@ -50,6 +50,14 @@ That's it, this class is able to:
 
 When you use the Injx trait in a parent class, all subclasses will have the dependency injection support.
 
+### Not sure if the services are available ?
+
+You can check before use it:
+```
+    if( $this->injxOk() && $this->getService('log') ) {
+        $this->getService('log')->....
+```
+
 ### Make services available in the constructor
 
 You may need some services in the constructor. You have to pass a container as argument to inject services at the begining:
@@ -81,7 +89,12 @@ You can *abbreviate* some notations :
 
     $container -> setService('log', new Logger());
     $container -> setService('db', new Database());
-    // (not really) shorten to
+    // either shorten to
+    $container = new \Injx\InjxContainer([
+        'log' => new Logger(),
+        'db'  => new Database()
+    ]);
+    // or (not really) shorten to
     $container
         -> setService('log', new Logger());
         -> setService('db', new Database());
