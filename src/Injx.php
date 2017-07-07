@@ -13,7 +13,7 @@ trait Injx {
      * Inject services into the calling object from the container passed as argument.
      * This method or injxTo ({@see \Injx\Injx::injxTo}) must be called before any call to getService.
      * @param mixed $caller Any object using the Injx trait
-     * @return The invoking instance for method chaining or other code convenience.
+     * @return mixed The invoking instance for method chaining or other code convenience.
      * @throws \InvalidArgumentException if the argument passed do not use the Injx trait.
      * @see \Injx\Injx::injxTo
      */
@@ -28,7 +28,7 @@ trait Injx {
      * Inject services to the given object if it uses the Injx trait.
      * This method or injxFrom ({@see \Injx\Injx::injxFrom}) must be called before any call to getService.
      * @param mixed $target Any object potentially needing the services
-     * @return The argument passed for code convenience.
+     * @return mixed The argument passed for code convenience.
      * @see \Injx\Injx::injxFrom
      */
     public function injxTo($target) {
@@ -48,8 +48,8 @@ trait Injx {
      * Associates a service to a key and make it visible from all objects injected from this one.
      * If a service is already associated to this key, it is replaced or masked by the new service.
      * @param string $key Key used to retreive the service
-     * @param type $service Any object proposing a service
-     * @return The invoking instance for method chaining.
+     * @param mixed $service Any object proposing a service
+     * @return mixed The invoking instance for method chaining.
      */
     public function setService(string $key, $service) {
         $this->injxServices[$key] = $service;
@@ -59,7 +59,7 @@ trait Injx {
     /**
      * Get a service from its key 
      * @param string $key
-     * @return type
+     * @return mixed The service defined by a previous call to setService
      * @throws \BadMethodCallException If injxFrom or injxTo has not been previously called once.
      */
     public function getService(string $key) {
@@ -70,7 +70,7 @@ trait Injx {
             return $this->injxCaller->getService($key);
         }
         else {
-            throw new \BadMethodCallException('injx() must be called first');
+            throw new \BadMethodCallException('injxFrom() or injxTo() must be called first');
         }
     }
     
