@@ -29,4 +29,14 @@ class InjxContainerTest extends TestCase {
         $this->tested->setService('foo', $service);
         $this->assertEquals($service, $this->tested->getService('foo'));
     }
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRaiseWithBadService() {
+        $this->tested->raise('bar');
+    }
+    public function testRaise() {
+        $this->tested->setService('foo', 'bar');
+        $this->assertEquals(0, $this->tested->raise('foo'));
+    }
 }

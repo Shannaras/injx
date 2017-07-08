@@ -44,6 +44,34 @@ trait Injx {
     public function injxOk() : bool {
         return $this->injxCaller != NULL;
     }
+    
+    /**
+     * Raises a service in order to make it available for ascendants and their injected objects.
+     * @param string $key Service to raise
+     * @param bool $safe When true (default), stop raising before overriding an existing service
+     * @return int The *depth* of the service
+     * @throws \InvalidArgumentException if the service does not exist.
+     */
+    public function raise(string $key, bool $safe = true) : int {
+        $mine = isset($this->injxServices[$key]);
+        if( !$this->injxCaller || isset($this->injxCaller->injxDummy) )  {
+            if( $mine ) {
+                return 0;
+            }
+            else {
+                throw new \InvalidArgumentException("Unknwon service $key");
+            }
+        }
+        else if( $safe && $mine && $this->injxCaller->getService($key) ) {
+            return 0;
+        }
+        else if( $mine ) {
+            $this->injxCaller->setService($key, $this->injxServices[$key]);
+            unset($this->injxServices[$key]);
+        }
+        return $this->injxCaller->raise($key) + 1;
+    }
+        
     /**
      * Associates a service to a key and make it visible from all objects injected from this one.
      * If a service is already associated to this key, it is replaced or masked by the new service.

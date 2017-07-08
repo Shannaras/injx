@@ -5,15 +5,12 @@ namespace Injx\Test;
 use PHPUnit\Framework\TestCase;
 
 use Injx\Injx;
+use Injx\InjxContainer;
 
 class InjxTest extends TestCase {
     public function setUp() {
         $this -> tested = new class { use Injx; };
-        $this -> mockContainer = new class {
-            function getService($key) {
-                return $key == 'foo' ? 'bar' : NULL;               
-            }
-        };
+        $this -> mockContainer = new InjxContainer(['foo'=>'bar']);
     }
     private function initDescendant() {
         $this -> tested_descendant = $this->tested->injxTo(
@@ -82,6 +79,40 @@ class InjxTest extends TestCase {
         $this ->initDescendant();
         $this -> tested -> setService('foo', 'foobar');
         $this -> assertEquals('foobar', $this -> tested_descendant -> getService('foo'));
+    }
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRaiseWithBadParameter() {
+        $this -> tested -> raise('bar');
+    }
+    public function testRaise() {
+        $this -> tested -> injxFrom( $this -> mockContainer );
+        $this -> tested -> setService('foobar', 'barfoo');
+        $this-> assertEquals( NULL, $this->mockContainer->getService('foobar'), 'Pre-requisite' ); 
+        $this-> assertEquals( 1, $this -> tested -> raise ('foobar') );
+        $this-> assertEquals( 'barfoo', $this->mockContainer->getService('foobar') );        
+    }
+    public function testRaiseFromDescendants() {
+        $this -> initDescendant();
+        $this -> tested -> setService('foobar', 'barfoo');
+        $this-> assertEquals( NULL, $this->mockContainer->getService('foobar'), 'Pre-requisite' ); 
+        $this-> assertEquals( 2, $this -> tested_descendant -> raise ('foobar') );
+        $this-> assertEquals( 'barfoo', $this->mockContainer->getService('foobar') );        
+    }
+    public function testRaiseSafe() {
+        $this -> tested -> injxFrom( $this -> mockContainer );
+        $this -> tested -> setService('foo', 'barfoo');
+        $this-> assertEquals( 'bar', $this->mockContainer->getService('foo'), 'Pre-requisite' ); 
+        $this-> assertEquals( 0, $this -> tested -> raise ('foo') );
+        $this-> assertEquals( 'bar', $this->mockContainer->getService('foo') ); 
+    }
+    public function testRaiseUnsafe() {
+        $this -> tested -> injxFrom( $this -> mockContainer );
+        $this -> tested -> setService('foo', 'barfoo');
+        $this-> assertEquals( 'bar', $this->mockContainer->getService('foo'), 'Pre-requisite' ); 
+        $this-> assertEquals( 1, $this -> tested -> raise ('foo', false) );
+        $this-> assertEquals( 'barfoo', $this->mockContainer->getService('foo') ); 
     }
     private $tested;
     private $tested_descendant;

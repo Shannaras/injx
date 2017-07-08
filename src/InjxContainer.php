@@ -34,7 +34,8 @@ class InjxContainer {
         $this->injxFrom(new class {
             function getService() { 
                 return NULL;
-            } 
+            }
+            var $injxDummy = true;
         });
         foreach($services as $key => $service) {
             $this->setService($key, $service);
