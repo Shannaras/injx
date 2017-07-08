@@ -21,7 +21,7 @@ trait Injx {
         if(!\method_exists($caller, 'getService')) {
             throw new \InvalidArgumentException('Argument must have a getService method');
         }
-        $this->injxCaller = $caller;
+        $this->inject($caller);
         return $this;
     }
     /**
@@ -101,7 +101,14 @@ trait Injx {
             throw new \BadMethodCallException('injxFrom() or injxTo() must be called first');
         }
     }
-    
+    /**
+     * Override this method to get informed services are available
+     * @param mixed $caller The container object
+     * @return mixed The parameter for code convenience
+     */
+    private function inject($caller) {
+        return $this->injxCaller = $caller;
+    }
     private $injxServices = [];
     private $injxCaller = NULL;
 }
